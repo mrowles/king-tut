@@ -20,7 +20,7 @@ main = do
     hClose backupHandle
 
     -- Testing parsing
-    putStrLn ("next test" ++ parseFile "" "" contents)
+    putStrLn ("next test" ++ parseAndTestFile contents)
 
     -- Create the new file with the handler
     tempFileHandle <- openFile tempFile WriteMode
@@ -42,17 +42,24 @@ goThroughFile originalString = do
 
 parseAndTestFile :: String -> String
 parseAndTestFile contents = do
-    parseFile "" "" contents
+    let statement = getNextStatement "" "" contents
+    -- Modify tests
+    -- Run Tests
+    --if after == ""
+    --then before
+    --else parseAndTestFile (before ++ statement)
+    statement
+
 
 --End of file
-parseFile :: String -> String -> String -> String
-parseFile before current "" = before
+getNextStatement :: String -> String -> String -> String
+getNextStatement before current "" = before
 
 --Parse File
-parseFile before current after = do
+getNextStatement before current after = do
     if checkEndOfStatement (after !! 0)
-    then (parseFile (before ++ [(after !! 0)]) "" "")
-    else (parseFile (before ++ [(after !! 0)]) "" (tail after))
+    then (getNextStatement (before ++ [(after !! 0)]) "" "")
+    else (getNextStatement (before ++ [(after !! 0)]) "" (tail after))
 
 checkEndOfStatement :: Char -> Bool
 checkEndOfStatement character = do
