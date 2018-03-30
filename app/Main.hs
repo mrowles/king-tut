@@ -6,12 +6,16 @@ data FileParsingInformation = FileParsingInformation{ beforeStatement :: String,
                                                       statement :: String,
                                                       afterStatement :: String }
 
+data ParseAndTestInformation = ParseAndTestInformation {statements :: FileParsingInformation,
+                                                        testCommand :: String
+                                                        }
 
 main = do
     let fileName = "test-file.txt"
     let currDir = withCurrentDirectory
     let backupFile = (fileName ++ ".tut.backup")
     let tempFile = (fileName ++ ".tut.tmp")
+    let testCommand = "test-command"
 
     -- Create handles for both the fileName and the backup file
     originalFileHandle <- openFile fileName ReadMode
@@ -25,7 +29,7 @@ main = do
     hClose backupHandle
 
     -- Testing parsing
-    let FileParsingInformation beforeStatement statement afterStatement = (parseAndTestFile $ FileParsingInformation "" "" contents)
+    let (ParseAndTestInformation (FileParsingInformation beforeStatement statement afterStatement) testCommand) = (parseAndTestFile $ ParseAndTestInformation (FileParsingInformation "" "" contents) testCommand)
     putStrLn ("next test" ++ beforeStatement)
 
     -- Create the new file with the handler
@@ -46,21 +50,15 @@ goThroughFile :: String -> IO ()
 goThroughFile originalString = do
     putStrLn originalString
 
-parseAndTestFile :: FileParsingInformation -> FileParsingInformation
-parseAndTestFile (FileParsingInformation beforeStatement statement afterStatement) = do
+parseAndTestFile :: ParseAndTestInformation -> ParseAndTestInformation
+parseAndTestFile (ParseAndTestInformation (FileParsingInformation beforeStatement statement afterStatement) testCommand) = do
     let FileParsingInformation nextBeforeStatement nextStatement nextAfterStatement = (getNextStatement beforeStatement statement afterStatement)
 
-    if afterStatement == ""
-    then FileParsingInformation nextBeforeStatement nextStatement nextAfterStatement
-    else parseAndTestFile (FileParsingInformation (nextBeforeStatement ++ nextStatement) "" nextAfterStatement)
-
-    --(FileParsingInformation nextBeforeStatement nextStatement nextAfterStatement)
-    -- Modify tests
     -- Run Tests
-    --if afterStatement == ""
-    --then FileParsingInformation beforeStatement statement afterStatement
-    --else parseAndTestFile FileParsingInformation (beforeStatement ++ statement) "" afterStatement
 
+    if afterStatement == ""
+    then (ParseAndTestInformation (FileParsingInformation nextBeforeStatement nextStatement nextAfterStatement) testCommand)
+    else parseAndTestFile (ParseAndTestInformation (FileParsingInformation (nextBeforeStatement ++ nextStatement) "" nextAfterStatement) testCommand)
 
 --End of file
 getNextStatement :: String -> String -> String -> FileParsingInformation
