@@ -2,6 +2,10 @@ import System.IO
 import System.Directory
 import Data.List
 
+data FileParsingInformation = FileParsingInformation{ beforeStatement :: String,
+                                                      statement :: String,
+                                                      afterStatement     :: String }
+
 main = do
     let fileName = "test-file.txt"
     let currDir = withCurrentDirectory
@@ -20,7 +24,8 @@ main = do
     hClose backupHandle
 
     -- Testing parsing
-    putStrLn ("next test" ++ parseAndTestFile contents)
+    let FileParsingInformation beforeStatement statement afterStatement = (parseAndTestFile contents)
+    putStrLn ("next test" ++ statement)
 
     -- Create the new file with the handler
     tempFileHandle <- openFile tempFile WriteMode
@@ -40,26 +45,26 @@ goThroughFile :: String -> IO ()
 goThroughFile originalString = do
     putStrLn originalString
 
-parseAndTestFile :: String -> String
+parseAndTestFile :: String -> FileParsingInformation
 parseAndTestFile contents = do
-    let statement = getNextStatement "" "" contents
+    let FileParsingInformation beforeStatement statement afterStatement = (getNextStatement "" "" contents)
     -- Modify tests
     -- Run Tests
-    --if after == ""
-    --then before
-    --else parseAndTestFile (before ++ statement)
-    statement
+    --if afterStatement == ""
+    --then beforeStatement
+    --else parseAndTestFile (beforeStatement ++ statement)
+    FileParsingInformation beforeStatement statement afterStatement
 
 
 --End of file
-getNextStatement :: String -> String -> String -> String
-getNextStatement before current "" = before
+getNextStatement :: String -> String -> String -> FileParsingInformation
+getNextStatement beforeStatement currentStatement "" = FileParsingInformation beforeStatement currentStatement ""
 
 --Parse File
-getNextStatement before current after = do
-    if checkEndOfStatement (after !! 0)
-    then (getNextStatement (before ++ [(after !! 0)]) "" "")
-    else (getNextStatement (before ++ [(after !! 0)]) "" (tail after))
+getNextStatement beforeStatement currentStatement afterStatement = do
+    if checkEndOfStatement (afterStatement !! 0)
+    then FileParsingInformation beforeStatement (currentStatement ++ [(afterStatement !! 0)]) ""
+    else (getNextStatement beforeStatement (currentStatement ++ [(afterStatement !! 0)]) (tail afterStatement))
 
 checkEndOfStatement :: Char -> Bool
 checkEndOfStatement character = do
