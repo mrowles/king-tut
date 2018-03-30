@@ -24,7 +24,6 @@ main = do
 
     -- Create the new file with the handler
     tempFileHandle <- openFile tempFile WriteMode
-    hPutStr tempFileHandle $ unlines newTodoItems
     hClose tempFileHandle
 
     -- Change the original file to remove the statement
@@ -51,5 +50,12 @@ parseFile before current "" = before
 
 --Parse File
 parseFile before current after = do
-    parseFile (before ++ [(after !! 0)]) "" (tail after)
+    if checkEndOfStatement (after !! 0)
+    then (parseFile (before ++ [(after !! 0)]) "" "")
+    else (parseFile (before ++ [(after !! 0)]) "" (tail after))
 
+checkEndOfStatement :: Char -> Bool
+checkEndOfStatement character = do
+    if character == ';'
+    then True
+    else False
