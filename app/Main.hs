@@ -4,7 +4,8 @@ import Data.List
 
 data FileParsingInformation = FileParsingInformation{ beforeStatement :: String,
                                                       statement :: String,
-                                                      afterStatement     :: String }
+                                                      afterStatement :: String }
+
 
 main = do
     let fileName = "test-file.txt"
@@ -25,7 +26,7 @@ main = do
 
     -- Testing parsing
     let FileParsingInformation beforeStatement statement afterStatement = (parseAndTestFile $ FileParsingInformation "" "" contents)
-    putStrLn ("next test" ++ statement)
+    putStrLn ("next test" ++ beforeStatement)
 
     -- Create the new file with the handler
     tempFileHandle <- openFile tempFile WriteMode
@@ -47,7 +48,13 @@ goThroughFile originalString = do
 
 parseAndTestFile :: FileParsingInformation -> FileParsingInformation
 parseAndTestFile (FileParsingInformation beforeStatement statement afterStatement) = do
-    getNextStatement beforeStatement statement afterStatement
+    let FileParsingInformation nextBeforeStatement nextStatement nextAfterStatement = (getNextStatement beforeStatement statement afterStatement)
+
+    if afterStatement == ""
+    then FileParsingInformation nextBeforeStatement nextStatement nextAfterStatement
+    else parseAndTestFile (FileParsingInformation (nextBeforeStatement ++ nextStatement) "" nextAfterStatement)
+
+    --(FileParsingInformation nextBeforeStatement nextStatement nextAfterStatement)
     -- Modify tests
     -- Run Tests
     --if afterStatement == ""
@@ -62,7 +69,7 @@ getNextStatement beforeStatement currentStatement "" = FileParsingInformation be
 --Parse File
 getNextStatement beforeStatement currentStatement afterStatement = do
     if checkEndOfStatement (afterStatement !! 0)
-    then FileParsingInformation beforeStatement (currentStatement ++ [(afterStatement !! 0)]) ""
+    then FileParsingInformation beforeStatement (currentStatement ++ [(afterStatement !! 0)]) (tail afterStatement)
     else (getNextStatement beforeStatement (currentStatement ++ [(afterStatement !! 0)]) (tail afterStatement))
 
 checkEndOfStatement :: Char -> Bool
