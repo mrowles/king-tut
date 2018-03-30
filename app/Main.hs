@@ -24,7 +24,7 @@ main = do
     hClose backupHandle
 
     -- Testing parsing
-    let FileParsingInformation beforeStatement statement afterStatement = (parseAndTestFile contents)
+    let FileParsingInformation beforeStatement statement afterStatement = (parseAndTestFile $ FileParsingInformation "" "" contents)
     putStrLn ("next test" ++ statement)
 
     -- Create the new file with the handler
@@ -45,15 +45,14 @@ goThroughFile :: String -> IO ()
 goThroughFile originalString = do
     putStrLn originalString
 
-parseAndTestFile :: String -> FileParsingInformation
-parseAndTestFile contents = do
-    let FileParsingInformation beforeStatement statement afterStatement = (getNextStatement "" "" contents)
+parseAndTestFile :: FileParsingInformation -> FileParsingInformation
+parseAndTestFile (FileParsingInformation beforeStatement statement afterStatement) = do
+    getNextStatement beforeStatement statement afterStatement
     -- Modify tests
     -- Run Tests
     --if afterStatement == ""
-    --then beforeStatement
-    --else parseAndTestFile (beforeStatement ++ statement)
-    FileParsingInformation beforeStatement statement afterStatement
+    --then FileParsingInformation beforeStatement statement afterStatement
+    --else parseAndTestFile FileParsingInformation (beforeStatement ++ statement) "" afterStatement
 
 
 --End of file
