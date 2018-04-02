@@ -2,3 +2,13 @@
 king-tut.cabal
 *~
 .idea/
+
+
+# Tut outputs
+*.tut.tmp
+*.tut.backup
+
+# Haskell Output
+Main.exe
+Main.hi
+Main.o
