@@ -91,7 +91,7 @@ checkEndOfStatement character = do
 
 exec :: String -> IO (String)
 exec cmd = do
-    (exitCode, output, errOutput) <- readProcessWithExitCode cmd [""] ""
+    (exitCode, output, errOutput) <- readProcessWithExitCode cmd ["hello world"] ""
     return output
 
 successOrNothing :: (ExitCode, a, b) -> Maybe a

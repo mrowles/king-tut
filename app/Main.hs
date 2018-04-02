@@ -13,7 +13,7 @@ main = do
     let currDir = withCurrentDirectory
     let backupFile = (fileName ++ ".tut.backup")
     let tempFile = (fileName ++ ".tut.tmp")
-    let testCommand = "echo"
+    let command = "echo"
 
     -- Create handles for both the fileName and the backup file
     originalFileHandle <- openFile fileName ReadMode
@@ -27,7 +27,7 @@ main = do
     hClose backupHandle
 
     -- Testing parsing
-    let (ParseAndTestInformationOutput (FileParsingInformation beforeStatement statement afterStatement) testCommand output) = (parseAndTestFileFirst $ ParseAndTestInformation (FileParsingInformation "" "" contents) testCommand)
+    let (ParseAndTestInformationOutput (FileParsingInformation beforeStatement statement afterStatement) testCommand output) = (parseAndTestFileFirst $ ParseAndTestInformation (FileParsingInformation "" "" contents) command)
     putStrLn(beforeStatement)
 --     hPutStrLn output
     -- Create the new file with the handler
